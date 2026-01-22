@@ -1,0 +1,5 @@
+Hours invested: 3
+
+All functions implemented as intended (Hopefully) with the exception of the english similarity scoring function. 
+Instead of lowest mean-square error I chose to represent english as a character probability vector.
+Using this vector I then compared the character probability of text samples using cosine similarity.
