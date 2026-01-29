@@ -18,6 +18,7 @@ from xor import extend_key, xor
 from collections import defaultdict
 
 from scipy.spatial.distance import cosine
+from sklearn.metrics import mean_squared_error
 
 
 _ENGLISH_FREQ: Final[Mapping[str, float]] = {
@@ -111,7 +112,6 @@ def analyze_char_freq(string: str) -> float:
     for c in string:
         if c in _ENGLISH_FREQ.keys():
             counts[_ENGLISH_CHAR_MAPPING[c]]+=(1/len(string))
-    #TODO
     return cosine(_ENGLISH_VECTOR, counts)
 
 
@@ -119,15 +119,16 @@ def crack_single_byte_xor(array: bytearray) -> \
         tuple[int, str, float]:
     """Find the single-byte key most likely to yield English text."""
     best = (0, "", 1.0)
-    for key in _ENGLISH_FREQ.keys():
+    for key in range(256):
         cipher = extend_key(key, len(array))
         shiftedCiphertext = xor(array, cipher)
-        print(shiftedCiphertext)
         text = bytearray_to_str(shiftedCiphertext)
-        if text.isprintable():
+        if text.isprintable() and text != '':
+            print(text)
+            print(key)
             score = analyze_char_freq(text)
-            if score < best[2]:
-                best = (ord(key), text, score)
+            if text.isprintable() and score < best[2]:
+                best = (key, text, score)
         
 
     return best
@@ -141,5 +142,5 @@ if __name__ == '__main__':
     crypttext_array = hex_to_bytearray(crypttext)
 
     k, s, e = crack_single_byte_xor(crypttext_array)
-    print(f"best key:       '{chr(k)}' ({k})  error = {e}")
+    print(f"best key:       '{ascii(k)}' ({k})  error = {e}")
     print(f"decoded string: '{s}'")

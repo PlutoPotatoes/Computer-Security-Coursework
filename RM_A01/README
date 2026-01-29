@@ -1,5 +1,8 @@
-Hours invested: 3
+Hours invested: 3 on problems 1,2,3, and 5, 3 hours on problem 4
 
 All functions implemented as intended (Hopefully) with the exception of the english similarity scoring function. 
 Instead of lowest mean-square error I chose to represent english as a character probability vector.
 Using this vector I then compared the character probability of text samples using cosine similarity.
+
+All functions work except 4. It is able to iterate through the lines and run the crack_single_byte_xor for each.
+However, I was unable to find the hidden message. 

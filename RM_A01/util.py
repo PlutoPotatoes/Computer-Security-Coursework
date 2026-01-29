@@ -35,7 +35,11 @@ def base64_to_bytearray(b64: str) -> bytearray:
 
 def bytearray_to_str(b: bytearray) -> str:
     """Render bytearray as text string for printing."""
-    return b.decode('utf-8', errors='ignore')
+    try:
+        return b.decode('utf-8', errors='strict')
+    except:
+        return ''
+
 
 
 def str_to_bytearray(txt: str) -> bytearray:

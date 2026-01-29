@@ -20,16 +20,19 @@ if __name__ == '__main__':
     filename = './4.txt'
     best_lineno=0
     best_return = ""
-    best_score = 1
+    best_score = 1.0
     with open(filename, 'r') as file:
         for ln, line in enumerate(file):
-            hexcode = line.strip()
-            lineBytes = hex_to_bytearray(hexcode)
+            print(ln)
+            #hexcode = line.removesuffix('\n')
+            lineBytes = hex_to_bytearray(line)
             #This is decoding invalid bytes 0x89
-            best_return= crack_single_byte_xor(lineBytes)
-            if best_return[2] < best_score:
+            result = crack_single_byte_xor(lineBytes)
+            score = result[2]
+            if score < best_score:
                 best_lineno = ln
-                best_score = best_return[2]
+                best_score = score
+                best_return = result
 
 
         # best_return should be a tuple returned from crack_single_byte_xor()
