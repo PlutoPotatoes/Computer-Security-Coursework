@@ -9,7 +9,6 @@ Assignment 2 (Challenge 6)
 [PUT YOUR NAME HERE]
 """
 
-
 from single_byte_xor import crack_single_byte_xor
 
 from util import base64_to_bytearray, bytearray_to_str, str_to_bytearray
