@@ -44,7 +44,7 @@ def bytearray_to_str(b: bytearray) -> str:
 
 def str_to_bytearray(txt: str) -> bytearray:
     """Parse plain text string to bytearray for manipulation."""
-    return bytearray(txt, 'utf-8')
+    return bytearray(txt, 'ascii')
 
 
 if __name__ == '__main__':
