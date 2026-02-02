@@ -59,7 +59,7 @@ _ENGLISH_VECTOR = [0.1918182, 0.0651738, 0.0124248, 0.0217339,
                    0.0331490, 0.0202124, 0.0564513, 0.0596302, 
                    0.0137645, 0.0008606, 0.0497563, 0.0515760,
                    0.0729357, 0.0225134, 0.0082903, 0.0171272,
-                   0.0013692,0.0145984,0.0007836]
+                   0.0013692,0.0145984,0.0007836, 0]
 
 _ENGLISH_CHAR_MAPPING = {
     ' ': 0,
@@ -108,10 +108,14 @@ def analyze_char_freq(string: str) -> float:
     """Check the frequency of English characters in a given string."""
     # forms a vector representing character frequencies and 
     # then calculates the cosine similarity between them
-    counts = [0.0]*27
+    counts = [0.0]*28
     for c in string:
         if c in _ENGLISH_FREQ.keys():
             counts[_ENGLISH_CHAR_MAPPING[c]]+=(1/len(string))
+        else:
+            counts[27] += 1/len(string)
+    
+    #return mean_squared_error(_ENGLISH_VECTOR, counts)
     return cosine(_ENGLISH_VECTOR, counts)
 
 
@@ -123,12 +127,10 @@ def crack_single_byte_xor(array: bytearray) -> \
         cipher = extend_key(key, len(array))
         shiftedCiphertext = xor(array, cipher)
         text = bytearray_to_str(shiftedCiphertext)
-        if text.isprintable() and text != '':
-            score = analyze_char_freq(text)
-            if text.isprintable() and score < best[2]:
-                best = (key, text, score)
-        
-
+        score = analyze_char_freq(text)
+        if text != '' and score <= best[2]:
+            best = (key, text, score)
+    
     return best
 
 

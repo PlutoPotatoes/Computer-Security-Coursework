@@ -63,12 +63,13 @@ def discover_block_size(
 
 def crack_repeating_key_xor(encrypted: bytearray) -> str:
     """Extract an unknown key from a given crypttext."""
-    block_size = discover_block_size(encrypted, blocks_to_compare=15)[0][0]
+    block_size = discover_block_size(encrypted, blocks_to_compare=15)[1][0]
+    print(block_size)
     key = ''
     #TODO
-    for start in range(block_size):
-        chunk = encrypted[start:block_size]
-        key += ascii(crack_single_byte_xor(chunk)[0])
+    for start in range(0, block_size, 1):
+        chunk = encrypted[start::block_size]
+        key += chr(crack_single_byte_xor(chunk)[0])
 
     return key
 
@@ -85,12 +86,10 @@ if __name__ == '__main__':
 
 
     print('Test 2: 6.txt')
-    filename = './6.txt'
+    filename = 'RM_A02/6.txt'
     with open(filename, 'r') as file:
         encrypted_base64 = ''.join(line.strip() for line in file)
         encrypted_bytearray = base64_to_bytearray(encrypted_base64)
-        print(discover_block_size(encrypted_bytearray))
-
         key = crack_repeating_key_xor(encrypted_bytearray)
         print(f'  detected key = "{key}"')
 

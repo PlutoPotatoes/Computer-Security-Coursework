@@ -17,7 +17,7 @@ from util import hex_to_bytearray
 
 if __name__ == '__main__':
 
-    filename = './4.txt'
+    filename = 'RM_A01/4.txt'
     best_lineno=0
     best_return = ""
     best_score = 1.0
