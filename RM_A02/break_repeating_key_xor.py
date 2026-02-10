@@ -63,7 +63,7 @@ def discover_block_size(
 
 def crack_repeating_key_xor(encrypted: bytearray) -> str:
     """Extract an unknown key from a given crypttext."""
-    block_size = discover_block_size(encrypted, blocks_to_compare=15)[1][0]
+    block_size = discover_block_size(encrypted, blocks_to_compare=15)[0][0]
     print(block_size)
     key = ''
     #TODO

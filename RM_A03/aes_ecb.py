@@ -12,6 +12,7 @@ Chris Cianci
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+import secrets
 
 from pkcs7 import pkcs7_pad, pkcs7_unpad
 
@@ -40,20 +41,18 @@ def decrypt_aes_128_ecb(ciphered: bytearray, key: bytearray) -> bytearray:
 
 def random_bytes(n: int) -> bytearray:
     """Generate a bytearray of random values."""
-    #TODO -- WHEN YOU GET TO C11
-    return None
+    return bytearray(secrets.token_bytes(n))
 
 
 def random_key(keysize: int = 16) -> bytearray:
     """Generate a bytearray of keysize random values."""
-    #TODO -- WHEN YOU GET TO C11
-    return None
+    return bytearray(secrets.token_bytes(keysize))
 
 
 def random_pad(min_len: int = 5, max_len: int = 10) -> bytearray:
     """Uniform integer in [min_len, max_len], then that many random bytes."""
-    #TODO -- WHEN YOU GET TO C11
-    return None
+    len = max(min_len, secrets.randbelow(max_len))
+    return bytearray(secrets.token_bytes(len))
 
 
 if __name__ == '__main__':
@@ -71,5 +70,8 @@ if __name__ == '__main__':
     print(ciphertext)
     print(decoded)
 
+    print(random_bytes(16))
+    print(random_key(16))
+    print(random_pad(16))
 
     pass

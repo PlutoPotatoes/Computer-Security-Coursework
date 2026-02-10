@@ -100,7 +100,6 @@ def char_freq(string: str, character: str) -> float:
     for c in string:
         if c == character:
             count+=1
-    #TODO
     return count/len(string)
 
 
@@ -123,8 +122,8 @@ def crack_single_byte_xor(array: bytearray) -> \
         cipher = extend_key(key, len(array))
         shiftedCiphertext = xor(array, cipher)
         text = bytearray_to_str(shiftedCiphertext)
+        print(text)
         if text.isprintable() and text != '':
-            print(text)
             print(key)
             score = analyze_char_freq(text)
             if text.isprintable() and score < best[2]:

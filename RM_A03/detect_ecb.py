@@ -12,18 +12,24 @@ Chris Cianci
 
 import secrets
 
+from aes_ecb import decrypt_aes_128_ecb
+
 from aes_cbc import encrypt_aes_128_cbc
 
 from aes_ecb import encrypt_aes_128_ecb, random_key, random_pad
 
 from pkcs7 import pkcs7_pad  # , pkcs7_unpad
 
-from util import str_to_bytearray
+from util import str_to_bytearray, bytearray_to_hex
 
 
 def detect_ecb(ciphertext: bytearray, blocksize: int = 16) -> bool:
     """Detect the use of ECB mode in a ciphertext."""
-    #TODO
+    blocks = [ciphertext[i:i+blocksize] for i in range(0, len(ciphertext), blocksize)]
+    detect = set()
+    [detect.add(bytearray_to_hex(block)) for block in blocks]
+    if len(detect) != len(blocks):
+        return True
     return False
 
 
@@ -50,5 +56,10 @@ if __name__ == '__main__':
     # here's a great place to give it a shot!
     # (Hint: Looking at the ones I gave you in the previous assignments
     #        should provide a decent place to start...)
+    filename = 'RM_A03/8.txt'
+    with open(filename, 'r') as file:
+        for line in file:
+            if detect_ecb(bytearray(line.strip(), 'utf-8'), 16):
+                print(f"ECB encrypt found: {line}")
 
     pass

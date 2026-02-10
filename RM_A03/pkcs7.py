@@ -12,7 +12,6 @@ import util
 
 def pkcs7_pad(payload: bytes, blocksize: int = 16) -> bytearray:
     """Add PKCS#7 padding to a string (up to blocksize)."""
-    #TODO
     padded = bytearray(payload)
     padding = blocksize - len(padded)%blocksize
     padded.extend([padding]*padding)
@@ -25,7 +24,6 @@ def pkcs7_unpad(byte_array: bytes) -> bytearray:
 
     Raise an Exception() if no valid padding found.
     """
-    #TODO
     last = byte_array[len(byte_array)-1]
     for i in range(int(last)):
         if byte_array[-(i+1)] != last:
