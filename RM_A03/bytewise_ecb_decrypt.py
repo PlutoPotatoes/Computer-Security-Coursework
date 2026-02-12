@@ -85,7 +85,7 @@ def bytewise_ecb_decrypt(fn: Callable[[str], str]) -> str:
     for prefix_length in range(i-1, i-suffixLen-1, -1):
         #First we get out set of possible keys for the current window
         keys = dict()
-        for c in range(128):
+        for c in range(256):
             block = curr_block + chr(c)
             keys[bytearray_to_hex(base64_to_bytearray(fn(block))[0:16])] = c
         #next we set up out window with the next secret character
