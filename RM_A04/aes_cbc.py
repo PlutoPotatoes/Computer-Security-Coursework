@@ -34,7 +34,6 @@ def encrypt_aes_128_cbc(
     blocks = [clear[i:i+block_size] for i in range(0, len(clear), block_size)]
     ciphertext = bytearray()
 
-    print(blocks)
     prev = xor(xor(blocks[0], initvec), key)
     ciphertext.extend(prev)
     for i in range(1, len(blocks)):
