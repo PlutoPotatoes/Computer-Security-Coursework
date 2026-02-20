@@ -19,7 +19,9 @@ from aes_ecb import random_key
 
 from pkcs7 import pkcs7_pad, pkcs7_unpad
 
-from util import base64_to_bytearray
+from util import base64_to_bytearray, bytearray_to_str
+
+from xor import xor
 
 
 _KEY = random_key()
@@ -70,6 +72,61 @@ def attack_cbc_padding_oracle(
     """Given only a padding oracle, decrypt a ciphertext."""
     # allocate a string to collect the plaintext
     plaintext = bytearray()
+    block_size = 16
+    print(len(ciphertext)//block_size)
+
+
+    for curr_block in range(len(ciphertext)//block_size, 1, -1):
+        block_text = bytearray()
+        for n in range(block_size):
+            print(f'n = {n}')
+            empty_bytes = bytearray(15-n)
+            found = False
+            for x in range(1, 256):
+                xor_bytes = empty_bytes.copy()
+                xor_bytes.append(x)
+                [xor_bytes.append(b^n+1) for b in block_text]
+                padding_test = xor(ciphertext[block_size*(curr_block-2): block_size*(curr_block-1)], xor_bytes)
+
+                padding_test.extend(ciphertext[block_size*(curr_block-1): block_size*curr_block])
+                if fn(bytearray(block_size), padding_test):
+                    block_text.insert(0,(n+1)^x)
+                    found = True
+                    print('gotem')
+                    break
+            if not found:
+                print('default')
+                block_text.insert(0,n+1)
+
+        block_text.extend(plaintext)
+        plaintext = block_text
+    
+    print('iv time')
+    
+    #get the final block using IV
+    block_text = bytearray()
+    for n in range(block_size):
+        empty_bytes = bytearray(15-n)
+        found = False
+        for x in range(1, 256):
+            xor_bytes = empty_bytes.copy()
+            xor_bytes.append(x)
+            [xor_bytes.append(b^(n+1)) for b in block_text]
+            test_iv = xor(iv, xor_bytes)
+            if fn(test_iv, ciphertext[0:block_size]):
+                block_text.insert(0,(n+1)^x)
+                found = True
+                print('gotem')
+                break
+        if not found:
+            block_text.insert(0,n+1)
+    
+    block_text.extend(plaintext)
+    plaintext = block_text
+    
+    plaintext = bytearray_to_str(plaintext)
+    plaintext = base64_to_bytearray(plaintext)
+
 
     #TODO
 
