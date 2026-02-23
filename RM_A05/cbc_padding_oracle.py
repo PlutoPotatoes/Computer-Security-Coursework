@@ -27,7 +27,7 @@ from xor import xor
 _KEY = random_key()
 _IV = random_key()
 _STRINGS = [
-    'TXkgbmFtZSBpcyBJbmlnbyBNb250b3lhLiBZb3Uga2lsbGVkIG15IGZhdGhl' +
+    'TXkgbmFtZSBpcyBJbmlnbyBNb250b3lhLiBZb3Uga2lsbGVkIG15IGZhdGhl'+
     'ci4gUHJlcGFyZSB0byBkaWUuICA=',
     'WW91IGtlZXAgdXNpbmcgdGhhdCB3b3JkLiBJIGRvIG5vdCB0aGluayBpdCBt' +
     'ZWFucyB3aGF0IHlvdSB0aGluayBpdCBtZWFucy4=',
@@ -43,6 +43,20 @@ _STRINGS = [
     'VGhlcmUncyBhIGJpZyBkaWZmZXJlbmNlIGJldHdlZW4gbW9zdGx5IGRlYWQg' +
     'YW5kIGFsbCBkZWFkLiBNb3N0bHkgZGVhZCBpcyBzbGlnaHRseSBhbGl2ZS4=',
 ]
+''' 
+    'WW91IGtlZXAgdXNpbmcgdGhhdCB3b3JkLiBJIGRvIG5vdCB0aGluayBpdCBt' +
+    'ZWFucyB3aGF0IHlvdSB0aGluayBpdCBtZWFucy4=',
+    'RGVhdGggY2Fubm90IHN0b3AgdHJ1ZSBsb3ZlLiBBbGwgaXQgY2FuIGRvIGlz' +
+    'IGRlbGF5IGl0IGZvciBhIHdoaWxlLg==',
+    'TGlmZSBpc24ndCBmYWlyLCBIaWdobmVzcy4gQW55b25lIHdobyBzYXlzIG90' +
+    'aGVyd2lzZSBpcyBzZWxsaW5nIHNvbWV0aGluZy4=',
+    'SW5jb25jZWl2YWJsZSE=',
+    'QXMgeW91IHdpc2gu',
+    'Tm8gbW9yZSByaHltZXMgbm93LCBJIG1lYW4gaXQuIEFueWJvZHkgd2FudCBhIHBlYW51dD8=',
+    'Um9kZW50cyBPZiBVbnVzdWFsIFNpemU/IEkgZG9uJ3QgdGhpbmsgdGhleSBleGlzdC4=',
+    'UGxlYXNlIHVuZGVyc3RhbmQgSSBob2xkIHlvdSBpbiB0aGUgaGlnaGVzdCByZXNwZWN0Lg==',
+    'VGhlcmUncyBhIGJpZyBkaWZmZXJlbmNlIGJldHdlZW4gbW9zdGx5IGRlYWQg' +
+    'YW5kIGFsbCBkZWFkLiBNb3N0bHkgZGVhZCBpcyBzbGlnaHRseSBhbGl2ZS4=','''
 _STRING = _STRINGS[secrets.randbelow(len(_STRINGS))]
 
 
@@ -63,6 +77,23 @@ def check_padding(iv: bytearray, crypttext: bytearray) -> bool:
         return False
     return True
 
+#if it's able to get the first byte right this function works flawlessly, but sometimes it can't find it
+def create_decrypt_mask(oracle: Callable[[bytearray, bytearray], bool], block_size:int, current_block: bytearray):
+    mask = bytearray(block_size)
+
+    for index in range(block_size-1, -1, -1):
+        pad_value = block_size - index
+        #all padding, xor known blocks by their value
+        last_block = xor(bytearray([pad_value]*block_size), mask)
+        for byte in range(255, -1, -1):
+            last_block[index] = byte
+            sequence = last_block+current_block
+            
+            if oracle(bytearray(block_size), sequence):
+                mask[index] = byte ^ pad_value
+                break
+    return mask
+
 
 def attack_cbc_padding_oracle(
             fn: Callable[[bytearray, bytearray], bool],
@@ -70,34 +101,39 @@ def attack_cbc_padding_oracle(
             ciphertext: bytearray
         ) -> bytearray:
     """Given only a padding oracle, decrypt a ciphertext."""
-    # allocate a string to collect the plaintext
+
+    block_size = len(iv)
     plaintext = bytearray()
-    block_size = 16
-    print(len(ciphertext)//block_size)
+    last_block = iv
+    for block_start in range(0, len(ciphertext), block_size):
+        current_block = ciphertext[block_start: block_start+block_size]
+        mask = create_decrypt_mask(fn, block_size, current_block)
+
+        plaintext+=xor(last_block, mask)
+        print(xor(last_block, mask))
+        last_block = current_block
+    return plaintext
 
 
+
+    '''
     for curr_block in range(len(ciphertext)//block_size, 1, -1):
         block_text = bytearray()
         for n in range(block_size):
-            print(f'n = {n}')
             empty_bytes = bytearray(15-n)
             found = False
             for x in range(1, 256):
                 xor_bytes = empty_bytes.copy()
                 xor_bytes.append(x)
-                [xor_bytes.append(b^n+1) for b in block_text]
+                [xor_bytes.append(b^(n+1)) for b in block_text]
                 padding_test = xor(ciphertext[block_size*(curr_block-2): block_size*(curr_block-1)], xor_bytes)
-
                 padding_test.extend(ciphertext[block_size*(curr_block-1): block_size*curr_block])
                 if fn(bytearray(block_size), padding_test):
                     block_text.insert(0,(n+1)^x)
                     found = True
-                    print('gotem')
                     break
             if not found:
-                print('default')
                 block_text.insert(0,n+1)
-
         block_text.extend(plaintext)
         plaintext = block_text
     
@@ -108,7 +144,7 @@ def attack_cbc_padding_oracle(
     for n in range(block_size):
         empty_bytes = bytearray(15-n)
         found = False
-        for x in range(1, 256):
+        for x in range(0, 256):
             xor_bytes = empty_bytes.copy()
             xor_bytes.append(x)
             [xor_bytes.append(b^(n+1)) for b in block_text]
@@ -116,17 +152,14 @@ def attack_cbc_padding_oracle(
             if fn(test_iv, ciphertext[0:block_size]):
                 block_text.insert(0,(n+1)^x)
                 found = True
-                print('gotem')
                 break
         if not found:
             block_text.insert(0,n+1)
-    
+    print(block_text)
     block_text.extend(plaintext)
     plaintext = block_text
     
-    plaintext = bytearray_to_str(plaintext)
-    plaintext = base64_to_bytearray(plaintext)
-
+    '''
 
     #TODO
 

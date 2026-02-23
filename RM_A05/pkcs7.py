@@ -25,6 +25,8 @@ def pkcs7_unpad(byte_array: bytes) -> bytearray:
     Raise an Exception() if no valid padding found.
     """
     last = byte_array[len(byte_array)-1]
+    if last < 1 or last>len(byte_array):
+        raise(Exception())
     for i in range(int(last)):
         if byte_array[-(i+1)] != last:
             raise(Exception())
