@@ -1,0 +1,3 @@
+Total time: 2 hours for the implementation, 3 hours troubleshooting
+
+Everything worked just fine, Except... my padding function didn't check to see if the first byte was \x00 which caused errors until I found the issue 3 hours later.
