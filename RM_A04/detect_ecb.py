@@ -20,7 +20,7 @@ from aes_ecb import encrypt_aes_128_ecb, random_key, random_pad
 
 from pkcs7 import pkcs7_pad  # , pkcs7_unpad
 
-from util import str_to_bytearray, bytearray_to_hex
+from RM_A07.util import str_to_bytearray, bytearray_to_hex
 
 
 def detect_ecb(ciphertext: bytearray, blocksize: int = 16) -> bool:

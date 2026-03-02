@@ -21,7 +21,7 @@ from pkcs7 import pkcs7_pad
 
 from detect_ecb import random_key
 
-from util import \
+from RM_A07.util import \
         base64_to_bytearray, \
         bytearray_to_base64, \
         bytearray_to_hex, \

@@ -18,12 +18,12 @@ from aes_cbc import decrypt_aes_128_cbc, encrypt_aes_128_cbc
 
 from pkcs7 import pkcs7_pad
 
-from util import \
+from RM_A07.util import \
         base64_to_bytearray, \
         bytearray_to_base64, \
         str_to_bytearray
 
-from xor import xor
+from RM_A07.xor import xor
 
 
 _KEY = random_key()

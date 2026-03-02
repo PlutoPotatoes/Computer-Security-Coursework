@@ -16,7 +16,7 @@ import secrets
 
 from pkcs7 import pkcs7_pad, pkcs7_unpad
 
-from util import \
+from RM_A07.util import \
         base64_to_bytearray, \
         bytearray_to_base64, \
         bytearray_to_str, \

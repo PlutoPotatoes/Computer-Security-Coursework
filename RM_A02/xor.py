@@ -10,7 +10,7 @@ Ryan Morrell
 """
 
 
-from util import bytearray_to_hex, hex_to_bytearray, str_to_bytearray, bytearray_to_base64
+from RM_A07.util import bytearray_to_hex, hex_to_bytearray, str_to_bytearray, bytearray_to_base64
 
 
 def extend_key(key: bytearray | int | str, length: int) -> bytearray:

@@ -14,9 +14,9 @@ from aes_ctr import aes_128_ctr
 
 from aes_ecb import random_key
 
-from util import base64_to_bytearray, bytearray_to_str
+from RM_A07.util import base64_to_bytearray, bytearray_to_str
 
-from xor import extend_key, xor
+from RM_A07.xor import extend_key, xor
 
 
 

@@ -15,7 +15,7 @@ from aes_ecb import decrypt_aes_128_ecb, encrypt_aes_128_ecb, random_key
 
 from pkcs7 import pkcs7_pad, pkcs7_unpad
 
-from util import \
+from RM_A07.util import \
         base64_to_bytearray, \
         bytearray_to_base64, \
         bytearray_to_str, \

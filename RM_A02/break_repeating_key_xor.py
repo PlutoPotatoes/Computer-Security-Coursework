@@ -11,9 +11,9 @@ Assignment 2 (Challenge 6)
 
 from single_byte_xor import crack_single_byte_xor
 
-from util import base64_to_bytearray, bytearray_to_str, str_to_bytearray
+from RM_A07.util import base64_to_bytearray, bytearray_to_str, str_to_bytearray
 
-from xor import extend_key, xor
+from RM_A07.xor import extend_key, xor
 from numpy import mean
 
 

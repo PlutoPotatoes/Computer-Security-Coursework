@@ -19,9 +19,9 @@ from aes_ecb import random_key
 
 from pkcs7 import pkcs7_pad, pkcs7_unpad
 
-from util import base64_to_bytearray, bytearray_to_str
+from RM_A07.util import base64_to_bytearray, bytearray_to_str
 
-from xor import xor
+from RM_A07.xor import xor
 
 
 _KEY = random_key()

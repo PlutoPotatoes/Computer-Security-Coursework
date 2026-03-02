@@ -19,7 +19,7 @@ from detect_ecb import detect_ecb
 
 from pkcs7 import pkcs7_pad
 
-from util import \
+from RM_A07.util import \
         base64_to_bytearray, \
         bytearray_to_base64, \
         bytearray_to_hex, \

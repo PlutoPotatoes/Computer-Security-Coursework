@@ -12,7 +12,7 @@ Ryan Morrell
 
 from single_byte_xor import crack_single_byte_xor
 
-from util import hex_to_bytearray
+from RM_A07.util import hex_to_bytearray
 
 
 if __name__ == '__main__':

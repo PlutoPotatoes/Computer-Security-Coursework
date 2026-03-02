@@ -8,7 +8,7 @@ Assignment 3 (Challenge 9,15)
 
 Chris Cianci
 """
-import util
+import RM_A07.util as util
 
 def pkcs7_pad(payload: bytes, blocksize: int = 16) -> bytearray:
     """Add PKCS#7 padding to a string (up to blocksize)."""

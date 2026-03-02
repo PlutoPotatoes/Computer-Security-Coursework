@@ -11,9 +11,9 @@ Ryan Morrell
 
 from typing import Final, Mapping
 
-from util import bytearray_to_str, hex_to_bytearray
+from RM_A07.util import bytearray_to_str, hex_to_bytearray
 
-from xor import extend_key, xor
+from RM_A07.xor import extend_key, xor
 
 from collections import defaultdict
 
