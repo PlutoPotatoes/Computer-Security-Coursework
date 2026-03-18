@@ -121,14 +121,29 @@ def splice_mt19937(state: list[int]) -> Callable[[], int]:
             k = 0
         # temper the next state value
         y = x[k]
-        y = y^((y>>u)&d)
-        y = y^((y<<s)&b)
-        y = y^((y<<t)&c)
-        num = y^(y>>l)
+        y = y ^ ((y >> u) & d)
+        y = y ^ ((y << s) & b)
+        y = y ^ ((y << t) & c)
+        y = y ^ (y >> l)
         k+=1
-        return num
+        return y
 
     return mt19937
+
+#This is what we discussed in class but all other implementations I can find are significantly more complex
+#The one below works well for our 32 bit implementation.
+def untemper_new(z: int):
+    u, d = 11, 0xFFFFFFFF
+    s, b = 7, 0x9D2C5680
+    t, c = 15, 0xEFC60000
+    l=18
+    
+    y = z ^ (z>>l)
+    y = y ^ ((y<<t) & c)
+    y = y ^ ((y<<s) & b)
+    y = y ^ ((y>>u) & d)
+    return y
+
 
 def untemper(y: int):
     u, d = 11, 0xFFFFFFFF
@@ -144,31 +159,23 @@ def untemper(y: int):
         y ^= y >> u & d
     return y
 
-def temper_state(state: list):
-    u, d = 11, 0xFFFFFFFF
-    s, b = 7, 0x9D2C5680
-    t, c = 15, 0xEFC60000
-    l=18
-    for i in range(len(state)):
-        x= state[i]
-        y = x^((x>>u)&d)
-        y = y^((y<<s)&b)
-        y = y^((y<<t)&c)
-        num = y^(y>>l)
-        state[i] = num
-    
-    return state
-
-
 
 def timestamp_random():
+    seed = int(time.time()) - random.randint(40, 1000)
+    generated = build_mt19937(seed)()
 
-    for i in range(30):
-        time.sleep(1)
-        print(time.time())
-        print(build_mt19937(int(time.time()))())
-
-    return 
+    current_time = int(time.time())
+    offset = None
+    for i in range(40, 1001):
+        copy = build_mt19937(current_time-i)()
+        if copy == generated:
+            print(f"seed = {current_time-i}")
+            offset = current_time-i
+    print(f"actual seed = {seed}")
+    if offset != None:
+        print(f"Key was generated using time as a seed {offset} seconds ago")
+        return True
+    return False
 
 def clone_mt19937():
     n = 624
@@ -180,7 +187,7 @@ def clone_mt19937():
     upper_mask = lower_mask^d
     
     #create new RNG instance and generate a full state's worth of numbers
-    rng = build_mt19937(time.time().__int__())
+    rng = build_mt19937(int(time.time()))
     x = []
     for _ in range(n):
         #store the untempered version of the numbers
@@ -191,8 +198,8 @@ def clone_mt19937():
     generated = [rng() for _ in range(n)]
     copied = [rng_copy() for _ in range(n)]
 
-    print(copied[:4])
-    print(generated[:4])
+    print(f"copied rng output:  {copied[:4]}")
+    print(f"initial generation: {generated[:4]}")
 
     return copied==generated
 
@@ -205,7 +212,6 @@ def mt19927_pad_encrypt(pt:bytearray, key:int):
     while len(stream)<n:
         val = rng() & 0xFF
         stream.append(val)
-    
     ct = xor(pt, stream)
     return ct
     
@@ -221,6 +227,20 @@ def mt19927_pad_decrypt(ct:bytearray, key:int):
     pt = xor(ct, stream)
     return pt
 
+def crack_mt19927_16(pt):
+    seed = int(time.time()) & 0xFFFF
+    ct = mt19927_pad_encrypt(bytearray(pt, 'utf-8'), seed)
+    key = 0x0000
+    while key < 0xFFFF:
+        found = mt19927_pad_decrypt(ct, key)
+        if mt19927_pad_decrypt(ct, key) == bytearray(pt, 'utf-8'):
+            print(f"found message: {found}")
+            print(f"found with key: {key}")
+            return key
+        key +=1
+
+
+    return "Not mt19927 or not 16 bit"
 
 if __name__ == '__main__':
 
@@ -239,13 +259,13 @@ if __name__ == '__main__':
     print('SUCCESS (no sequence errors encountered).')'''
 
     #C22
-    #timestamp_random()
+    timestamp_random()
 
     #C23
-    #print(clone_mt19937())
+    print(clone_mt19937())
 
     #C24
-    key = int(time.time())
-    ct = mt19927_pad_encrypt(bytearray('Hello it is me', 'utf-8'), key)
-    pt = mt19927_pad_decrypt(ct, key)
-    print(pt)
+    #key = int(time.time())
+    #ct = mt19927_pad_encrypt(bytearray('Hello it is me', 'utf-8'), key)
+    #pt = mt19927_pad_decrypt(ct, key)
+    #key = crack_mt19927_16("hello it's me")

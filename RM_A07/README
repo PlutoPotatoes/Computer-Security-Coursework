@@ -1,0 +1,5 @@
+Hours Spent: 6ish + 2 or so troubleshooting the untemper function
+
+After class discussion I'm still finding that the simple untemper function doesn't work. 
+I'm unsure if this is because of my implementation, or the way other function work in my code so i've used an existing implementation for the sake of completion.
+I included my other implementation as untemper_new() incase you're curious.

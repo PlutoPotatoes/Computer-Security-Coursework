@@ -12,9 +12,9 @@ Chris Cianci
 
 from aes_ecb import encrypt_aes_128_ecb, random_key
 
-from RM_A07.util import base64_to_bytearray, str_to_bytearray
+from util import base64_to_bytearray, str_to_bytearray
 
-from RM_A07.xor import xor
+from xor import xor
 
 
 def aes_128_ctr(data: bytearray,
