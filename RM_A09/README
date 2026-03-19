@@ -1,0 +1,4 @@
+I spent roughly 4 hours on this assignment
+
+All should work as intended, although I did origninally think we were supposed to encrypt after hashing the mac.
+Meaning, there are some extra utility functions in the build mac function. 

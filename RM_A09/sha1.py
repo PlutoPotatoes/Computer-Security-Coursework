@@ -14,6 +14,7 @@ import hashlib
 import struct
 
 from aes_ecb import random_key
+from aes_cbc import decrypt_aes_128_cbc, encrypt_aes_128_cbc
 
 
 def leftrotate(value, shift):
@@ -48,7 +49,6 @@ def sha1(message,
     # append ml, the original message length in bits, as a 64-bit
     # big-endian integer. Thus, the total length is a multiple of 512 bits.
     message += struct.pack('>Q', ml)
-
     # Process the message in successive 512-bit (64-byte) chunks:
     for i in range(0, len(message), 64):
 
@@ -102,19 +102,50 @@ def sha1(message,
     return '%08x%08x%08x%08x%08x' % (h0, h1, h2, h3, h4)
 
 
-def build_mac():
+
+
+def build_mac(plaintext:str):
     """Generate a function with 'static' variables."""
-    unknown_key = random_key()
+    unknown_key = random_key(16)
+    iv = random_key(16)
+    pt = bytearray(plaintext, 'utf-8')
 
-    def mac(message):
-        # TODO (Yes, it's trivial, don't overthink it)
-        return ''
+    #generates mac for the plaintext, concats the two, encrypts with CBC and returns
+    def mac_encrypt(pt):
+        nonlocal unknown_key
+        nonlocal iv
+        message_mac = mac(pt) + pt
+        return encrypt_aes_128_cbc(message_mac, unknown_key, iv)
 
-    def verify_mac(message, mac) -> bool:
-        # TODO (I just need to make sure you're paying attention)
-        return False
+    #decrypts and checks mac throws an error if mac doesn't match
+    def mac_decrypt(ct):
+        nonlocal unknown_key
+        nonlocal iv
+        full_message = decrypt_aes_128_cbc(ct, unknown_key, iv)
+        message_mac = full_message[:40]
+        pt = full_message[40:]
+        print(pt)
+        print(message_mac)
+        print(mac(message=pt))
+        if message_mac != mac(pt):
+            raise Exception("Mac Address Does Not Match Message")
+        
+        return pt
 
-    return mac, verify_mac
+    #generates SHA-1 MAC for a message using the unknown key
+    def mac(message:bytearray)->bytearray:
+        nonlocal unknown_key
+        clear = unknown_key + message
+        mac = bytearray(sha1(clear), 'utf-8')
+        return mac
+    
+    def validate_mac(plaintext, given_mac):
+        nonlocal unknown_key
+        message_mac = mac(plaintext)
+        return message_mac == given_mac
+
+
+    return mac, validate_mac
 
 
 if __name__ == '__main__':
@@ -127,8 +158,4 @@ if __name__ == '__main__':
     # print(library_hash)
     print('  SUCCESS' if (local_hash == library_hash) else '  FAILURE')
 
-    # TODO
-    # Write some more test cases here to play with it.
-    # Show that any change to the message changes the MAC,
-    # and that you can't (easily) generate a new MAC for your
-    # altered message when you don't know the key...
+
