@@ -1,0 +1,11 @@
+I spent roughly 1-2 hours on this problem set and all the code worked as planned
+
+As for C35, the ability to manipulate g allows the manipulation of the equation that generates both public keys and session keys. 
+
+If g = 0 for example: 0^x is always 0 so the public key will always be 0. The session key then equals 0^x mod p which will also always equal 0.
+
+if g = p then p^x mod p will always equal 0 p to any power divided by p will never have a remainder. This means that session key equals 0^x which will always equal 0.
+
+if g = p-1 then g^x mod p will always equal g. Meaning that the session key equation is the same as the public key equation and g will always be the session key. 
+
+Even with these exploits however this is unlikely to be an option for attackers in real life. If you have access to the parameters in the first place then you could make p=1, removing the part of DH that makes it a one way function and allowing you to find the user's private key from their public key. It's more likely that these parameters are generated or decided behind the wall of the oracle and only shared with users after they have been decided. Also these four cases could easily be filtered out with if statements if worst came to worst. Still it's interesting to think about how RSA adapted this and why they had to add more layers of math to the selection of the numbers being used. 
