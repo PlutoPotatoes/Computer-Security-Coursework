@@ -1,0 +1,3 @@
+Total time: 1 hour initial implementation 2 hours troubleshooting
+
+I'm not sure everything is actually working as intended but if i extend the key length to be long enough then it is able to encrypt and decrypt properly. It didn't seem like e*d mod n was ever equal to 1 though. However I compared this against a few implementations and they all have very similar structure so I'm unsure what to do about that.
